@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/cast"
 )
 
@@ -16,6 +18,9 @@ type Config struct {
 
 func Load() Config {
 
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("error!!!", err)
+	}
 	cfg := Config{}
 
 	cfg.PostgresHost = cast.ToString(getOrReturnDefault("POSTGRES_HOST", "localhost"))
@@ -28,10 +33,10 @@ func Load() Config {
 }
 
 func getOrReturnDefault(key string, defaultValue interface{}) interface{} {
-	_, exists := os.LookupEnv(key)
-	if exists {
-		return os.Getenv(key)
-	}
 
-	return defaultValue
+	fmt.Printf("%v, %v, %v\n", key, os.Getenv(key) == "", os.Getenv(key))
+	if os.Getenv(key) == "" {
+		return defaultValue
+	}
+	return os.Getenv(key)
 }

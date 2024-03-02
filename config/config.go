@@ -34,7 +34,6 @@ func Load() Config {
 
 func getOrReturnDefault(key string, defaultValue interface{}) interface{} {
 
-	fmt.Printf("%v, %v, %v\n", key, os.Getenv(key) == "", os.Getenv(key))
 	if os.Getenv(key) == "" {
 		return defaultValue
 	}

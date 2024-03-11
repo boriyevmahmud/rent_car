@@ -91,6 +91,9 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 		filter += fmt.Sprintf(` and name ILIKE  '%%%v%%' `, req.Search)
 	}
 
+
+	
+
 	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter: ", filter)
 	rows, err := c.db.Query(`select 

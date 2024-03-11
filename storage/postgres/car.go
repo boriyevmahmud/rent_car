@@ -80,18 +80,19 @@ func (c *carRepo) Update(car models.Car) (string, error) {
 	return car.Id, nil
 }
 
-func (c carRepo) GetAll(search string) (models.GetAllCarsResponse, error) {
+func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse, error) {
 	var (
 		resp   = models.GetAllCarsResponse{}
 		filter = ""
 	)
+	offset := (req.Page - 1) * req.Limit
 
-	if search != "" {
-		filter += fmt.Sprintf(` and name ILIKE  '%%%v%%' `, search)
+	if req.Search != "" {
+		filter += fmt.Sprintf(` and name ILIKE  '%%%v%%' `, req.Search)
 	}
 
+	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter: ", filter)
-
 	rows, err := c.db.Query(`select 
 				count(id) OVER(),
 				id, 
@@ -104,7 +105,8 @@ func (c carRepo) GetAll(search string) (models.GetAllCarsResponse, error) {
 				engine_cap,
 				created_at::date,
 				updated_at
-	  FROM cars WHERE deleted_at = 0 ` + filter + ``)
+	  FROM cars WHERE deleted_at = 0 ` + filter + `
+	  `)
 	if err != nil {
 		return resp, err
 	}

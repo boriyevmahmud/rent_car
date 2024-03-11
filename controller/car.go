@@ -102,14 +102,34 @@ func (c Controller) UpdateCar(w http.ResponseWriter, r *http.Request) {
 
 func (c Controller) GetAllCars(w http.ResponseWriter, r *http.Request) {
 	var (
-		values = r.URL.Query()
-		search string
+		values  = r.URL.Query()
+		search  string
+		request = models.GetAllCarsRequest{}
 	)
 	if _, ok := values["search"]; ok {
 		search = values["search"][0]
 	}
 
-	cars, err := c.Store.Car().GetAll(search)
+	request.Search = search
+
+	page, err := ParsePageQueryParam(r)
+	if err != nil {
+		fmt.Println("error while parsing page, err: ", err)
+		handleResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	limit, err := ParseLimitQueryParam(r)
+	if err != nil {
+		fmt.Println("error while parsing limit, err: ", err)
+		handleResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	fmt.Println("page: ", page)
+	fmt.Println("limit: ", limit)
+
+	request.Page = page
+	request.Limit = limit
+	cars, err := c.Store.Car().GetAll(request)
 	if err != nil {
 		fmt.Println("error while getting cars, err: ", err)
 		handleResponse(w, http.StatusInternalServerError, err.Error())

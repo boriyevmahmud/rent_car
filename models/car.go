@@ -17,3 +17,9 @@ type GetAllCarsResponse struct {
 	Cars  []Car `json:"cars"`
 	Count int64 `json:"count"`
 }
+
+type GetAllCarsRequest struct {
+	Search string `json:"search"`
+	Page   uint64 `json:"page"`
+	Limit  uint64 `json:"limit"`
+}

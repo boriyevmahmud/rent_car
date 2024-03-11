@@ -10,7 +10,7 @@ type IStorage interface {
 type ICarStorage interface {
 	Create(models.Car) (string, error)
 	// GetByID(models.PrimaryKey) (models.User, error)
-	GetAll(search string) (models.GetAllCarsResponse, error)
+	GetAll(request models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
 	Update(models.Car) (string, error)
 	Delete(string) error
 }

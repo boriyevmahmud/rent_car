@@ -5,17 +5,17 @@ import (
 	"net/http"
 	"rent-car/config"
 	"rent-car/controller"
-	"rent-car/storage"
+	"rent-car/storage/postgres"
 )
 
 func main() {
 	cfg := config.Load()
-	store, err := storage.New(cfg)
+	store, err := postgres.New(cfg)
 	if err != nil {
 		fmt.Println("error while connecting db, err: ", err)
 		return
 	}
-	defer store.DB.Close()
+	defer store.CloseDB()
 
 	con := controller.NewController(store)
 

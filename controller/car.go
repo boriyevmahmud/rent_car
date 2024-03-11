@@ -56,7 +56,7 @@ func (c Controller) CreateCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := c.Store.Car.Create(car)
+	id, err := c.Store.Car().Create(car)
 	if err != nil {
 		fmt.Println("error while creating car, err: ", err)
 		handleResponse(w, http.StatusInternalServerError, err)
@@ -90,7 +90,7 @@ func (c Controller) UpdateCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := c.Store.Car.Update(car)
+	id, err := c.Store.Car().Update(car)
 	if err != nil {
 		fmt.Println("error while creating car, err: ", err)
 		handleResponse(w, http.StatusInternalServerError, err)
@@ -109,7 +109,7 @@ func (c Controller) GetAllCars(w http.ResponseWriter, r *http.Request) {
 		search = values["search"][0]
 	}
 
-	cars, err := c.Store.Car.GetAllCars(search)
+	cars, err := c.Store.Car().GetAll(search)
 	if err != nil {
 		fmt.Println("error while getting cars, err: ", err)
 		handleResponse(w, http.StatusInternalServerError, err.Error())
@@ -131,7 +131,7 @@ func (c Controller) DeleteCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.Store.Car.Delete(id)
+	err = c.Store.Car().Delete(id)
 	if err != nil {
 		fmt.Println("error while deleting car, err: ", err)
 		handleResponse(w, http.StatusInternalServerError, err)

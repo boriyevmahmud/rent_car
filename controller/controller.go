@@ -10,10 +10,10 @@ import (
 )
 
 type Controller struct {
-	Store storage.Store
+	Store storage.IStorage
 }
 
-func NewController(store storage.Store) Controller {
+func NewController(store storage.IStorage) Controller {
 	return Controller{
 		Store: store,
 	}

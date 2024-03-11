@@ -1,4 +1,4 @@
-package storage
+package postgres
 
 import (
 	"database/sql"
@@ -80,7 +80,7 @@ func (c *carRepo) Update(car models.Car) (string, error) {
 	return car.Id, nil
 }
 
-func (c carRepo) GetAllCars(search string) (models.GetAllCarsResponse, error) {
+func (c carRepo) GetAll(search string) (models.GetAllCarsResponse, error) {
 	var (
 		resp   = models.GetAllCarsResponse{}
 		filter = ""

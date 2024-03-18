@@ -1,26 +1,26 @@
-package controller
+package handler
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"rent-car/api/models"
 	"rent-car/config"
-	"rent-car/models"
 	"rent-car/storage"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-type Controller struct {
+type Handler struct {
 	Store storage.IStorage
 }
 
-func NewController(store storage.IStorage) Controller {
-	return Controller{
+func NewStrg(store storage.IStorage) Handler {
+	return Handler{
 		Store: store,
 	}
 }
 
-func handleResponse(w http.ResponseWriter, statusCode int, data interface{}) {
+func handleResponse(c *gin.Context, msg string, statusCode int, data interface{}) {
 	resp := models.Response{}
 
 	if statusCode >= 100 && statusCode <= 199 {
@@ -31,25 +31,20 @@ func handleResponse(w http.ResponseWriter, statusCode int, data interface{}) {
 		resp.Description = config.ERR_REDIRECTION
 	} else if statusCode >= 400 && statusCode <= 499 {
 		resp.Description = config.ERR_BADREQUEST
+		fmt.Println("BAD REQUEST: "+msg, "reason: ", data)
 	} else {
 		resp.Description = config.ERR_INTERNAL_SERVER
+		fmt.Println("INTERNAL SERVER ERROR: "+msg, "reason: ", data)
 	}
+
 	resp.StatusCode = statusCode
 	resp.Data = data
 
-	js, err := json.Marshal(resp)
-	if err != nil {
-		fmt.Println("error while marshalling: ", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	w.WriteHeader(statusCode)
-	w.Write(js)
+	c.JSON(resp.StatusCode, resp)
 }
 
-func ParsePageQueryParam(r *http.Request) (uint64, error) {
-	pageStr := r.URL.Query().Get("page")
+func ParsePageQueryParam(c *gin.Context) (uint64, error) {
+	pageStr := c.Query("page")
 	if pageStr == "" {
 		pageStr = "1"
 	}
@@ -57,16 +52,14 @@ func ParsePageQueryParam(r *http.Request) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	//offset: page - 1 * limit = 0
-	//limit: limit = 10 
 	if page == 0 {
 		return 1, nil
 	}
 	return page, nil
 }
 
-func ParseLimitQueryParam(r *http.Request) (uint64, error) {
-	limitStr := r.URL.Query().Get("limit")
+func ParseLimitQueryParam(c *gin.Context) (uint64, error) {
+	limitStr := c.Query("limit")
 	if limitStr == "" {
 		limitStr = "10"
 	}

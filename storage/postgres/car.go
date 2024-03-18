@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"rent-car/models"
+	"rent-car/api/models"
 	"rent-car/pkg"
 
 	"github.com/google/uuid"
@@ -91,9 +91,6 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 		filter += fmt.Sprintf(` and name ILIKE  '%%%v%%' `, req.Search)
 	}
 
-
-	
-
 	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter: ", filter)
 	rows, err := c.db.Query(`select 
@@ -148,7 +145,6 @@ func (c *carRepo) Delete(id string) error {
 	`
 
 	_, err := c.db.Exec(query, id)
-
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,6 @@
 package storage
 
-import "rent-car/models"
+import "rent-car/api/models"
 
 type IStorage interface {
 	CloseDB()

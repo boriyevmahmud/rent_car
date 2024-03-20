@@ -1,6 +1,7 @@
 package handler
 
 import (
+	_ "rent-car/api/docs"
 	"fmt"
 	"net/http"
 	"rent-car/api/models"

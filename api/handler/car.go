@@ -11,6 +11,18 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCar godoc
+// @Router 		/car [POST]
+// @Summary 	create a car
+// @Description This api is creates a new car and returns it's id
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		car body models.Car true "car"
+// @Success		200  {object}  models.Car
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 func (h Handler) CreateCar(c *gin.Context) {
 	car := models.Car{}
 

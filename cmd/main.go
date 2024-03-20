@@ -18,6 +18,6 @@ func main() {
 
 	c := api.New(store)
 
-	fmt.Println("programm is running on localhost:8008...")
+	fmt.Println("programm is running on localhost:8080...")
 	c.Run(":8080")
 }

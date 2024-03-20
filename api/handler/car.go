@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// CreateCar godoc
 // @Router 		/car [POST]
 // @Summary 	create a car
 // @Description This api is creates a new car and returns it's id

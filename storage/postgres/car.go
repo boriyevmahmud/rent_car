@@ -1,19 +1,21 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"rent-car/api/models"
 	"rent-car/pkg"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type carRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewCar(db *sql.DB) carRepo {
+func NewCar(db *pgxpool.Pool) carRepo {
 	return carRepo{
 		db: db,
 	}
@@ -42,7 +44,7 @@ func (c *carRepo) Create(car models.Car) (string, error) {
 		VALUES($1,$2,$3,$4,$5,$6,$7) 
 	`
 
-	_, err := c.db.Exec(query,
+	_, err := c.db.Exec(context.Background(), query,
 		id.String(),
 		car.Name, car.Brand,
 		car.Model, car.HoursePower,
@@ -68,7 +70,7 @@ func (c *carRepo) Update(car models.Car) (string, error) {
 		WHERE id = $7 AND deleted_at=0
 	`
 
-	_, err := c.db.Exec(query,
+	_, err := c.db.Exec(context.Background(), query,
 		car.Name, car.Brand,
 		car.Model, car.HoursePower,
 		car.Colour, car.EngineCap, car.Id)
@@ -93,7 +95,7 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 
 	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter: ", filter)
-	rows, err := c.db.Query(`select 
+	rows, err := c.db.Query(context.Background(), `select 
 				count(id) OVER(),
 				id, 
 				name,
@@ -103,9 +105,9 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 				hourse_power,
 				colour,
 				engine_cap,
-				created_at::date,
+				--created_at::date,
 				updated_at
-	  FROM cars WHERE deleted_at = 0 ` + filter + `
+	  FROM cars WHERE deleted_at = 0 `+filter+`
 	  `)
 	if err != nil {
 		return resp, err
@@ -126,7 +128,7 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 			&car.HoursePower,
 			&car.Colour,
 			&car.EngineCap,
-			&car.CreatedAt,
+			// &car.CreatedAt,
 			&updateAt); err != nil {
 			return resp, err
 		}
@@ -144,7 +146,7 @@ func (c *carRepo) Delete(id string) error {
 		WHERE id = $1 AND deleted_at=0
 	`
 
-	_, err := c.db.Exec(query, id)
+	_, err := c.db.Exec(context.Background(), query, id)
 	if err != nil {
 		return err
 	}

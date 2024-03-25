@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"rent-car/api"
 	"rent-car/config"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	cfg := config.Load()
-	store, err := postgres.New(cfg)
+	store, err := postgres.New(context.Background(), cfg)
 	if err != nil {
 		fmt.Println("error while connecting db, err: ", err)
 		return

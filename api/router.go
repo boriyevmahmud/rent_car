@@ -2,6 +2,7 @@ package api
 
 import (
 	"rent-car/api/handler"
+	"rent-car/service"
 	"rent-car/storage"
 
 	"github.com/gin-gonic/gin"
@@ -13,8 +14,8 @@ import (
 // @title           Swagger Example API
 // @version         1.0
 // @description     This is a sample server celler server.
-func New(store storage.IStorage) *gin.Engine {
-	h := handler.NewStrg(store)
+func New(services service.IServiceManager, store storage.IStorage) *gin.Engine {
+	h := handler.NewStrg(store, services)
 
 	r := gin.Default()
 

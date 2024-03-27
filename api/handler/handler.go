@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"rent-car/api/models"
 	"rent-car/config"
+	"rent-car/service"
 	"rent-car/storage"
 	"strconv"
 
@@ -11,12 +12,14 @@ import (
 )
 
 type Handler struct {
-	Store storage.IStorage
+	Store    storage.IStorage
+	Services service.IServiceManager
 }
 
-func NewStrg(store storage.IStorage) Handler {
+func NewStrg(store storage.IStorage, services service.IServiceManager) Handler {
 	return Handler{
-		Store: store,
+		Store:    store,
+		Services: services,
 	}
 }
 

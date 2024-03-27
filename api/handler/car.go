@@ -1,9 +1,10 @@
 package handler
 
 import (
-	_ "rent-car/api/docs"
+	"context"
 	"fmt"
 	"net/http"
+	_ "rent-car/api/docs"
 	"rent-car/api/models"
 	"rent-car/pkg/check"
 	"strconv"
@@ -36,7 +37,7 @@ func (h Handler) CreateCar(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Store.Car().Create(car)
+	id, err := h.Services.Car().Create(context.Background(), car)
 	if err != nil {
 		handleResponse(c, "error while creating car", http.StatusBadRequest, err.Error())
 		return

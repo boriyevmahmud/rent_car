@@ -29,7 +29,7 @@ get (id) body,err
 getAll (search) []body,count,err
 */
 
-func (c *carRepo) Create(car models.Car) (string, error) {
+func (c *carRepo) Create(ctx context.Context, car models.Car) (string, error) {
 
 	id := uuid.New()
 
@@ -44,7 +44,7 @@ func (c *carRepo) Create(car models.Car) (string, error) {
 		VALUES($1,$2,$3,$4,$5,$6,$7) 
 	`
 
-	_, err := c.db.Exec(context.Background(), query,
+	_, err := c.db.Exec(ctx, query,
 		id.String(),
 		car.Name, car.Brand,
 		car.Model, car.HoursePower,

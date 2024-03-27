@@ -10,6 +10,5 @@ func ValidateCarYear(year int) error {
 		return errors.New("year is not valid")
 	}
 
-	
 	return nil
 }

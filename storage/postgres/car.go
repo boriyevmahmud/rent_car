@@ -40,15 +40,17 @@ func (c *carRepo) Create(ctx context.Context, car models.Car) (string, error) {
 		model,
 		hourse_power,
 		colour,
-		engine_cap)
-		VALUES($1,$2,$3,$4,$5,$6,$7) 
+		engine_cap,
+		year)
+		VALUES($1,$2,$3,$4,$5,$6,$7,$8) 
 	`
 
 	_, err := c.db.Exec(ctx, query,
 		id.String(),
 		car.Name, car.Brand,
 		car.Model, car.HoursePower,
-		car.Colour, car.EngineCap)
+		car.Colour, car.EngineCap,
+		car.Year)
 
 	if err != nil {
 		return "", err
@@ -137,6 +139,39 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 		resp.Cars = append(resp.Cars, car)
 	}
 	return resp, nil
+}
+func (c carRepo) Get(id string) (models.Car, error) {
+	var (
+		car      = models.Car{}
+		updateAt sql.NullString
+	)
+
+	err := c.db.QueryRow(context.Background(), `select 
+				id, 
+				name,
+				brand,
+				model,
+				year,
+				hourse_power,
+				colour,
+				engine_cap,
+				updated_at
+	  FROM cars WHERE deleted_at = 0 and id =$1
+	  `, id).Scan(&car.Id,
+		&car.Name,
+		&car.Brand,
+		&car.Model,
+		&car.Year,
+		&car.HoursePower,
+		&car.Colour,
+		&car.EngineCap,
+		&updateAt)
+	if err != nil {
+		return car, err
+	}
+	car.UpdatedAt = pkg.NullStringToString(updateAt)
+
+	return car, nil
 }
 
 func (c *carRepo) Delete(id string) error {

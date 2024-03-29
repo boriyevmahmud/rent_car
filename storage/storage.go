@@ -12,7 +12,7 @@ type IStorage interface {
 
 type ICarStorage interface {
 	Create(context.Context, models.Car) (string, error)
-	// GetByID(models.PrimaryKey) (models.User, error)
+	Get(string) (models.Car, error)
 	GetAll(request models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
 	Update(models.Car) (string, error)
 	Delete(string) error

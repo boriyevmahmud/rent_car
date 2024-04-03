@@ -59,8 +59,9 @@ func (c *carRepo) Create(ctx context.Context, car models.Car) (string, error) {
 	return id.String(), nil
 }
 
-func (c *carRepo) Update(car models.Car) (string, error) {
+func (c *carRepo) Update(ctx context.Context, car models.Car) (string, error) {
 
+	fmt.Println("car.id", car.Id)
 	query := ` UPDATE cars set
 			name=$1,
 			brand=$2,
@@ -68,14 +69,20 @@ func (c *carRepo) Update(car models.Car) (string, error) {
 			hourse_power=$4,
 			colour=$5,
 			engine_cap=$6,
+			year = $7,
 			updated_at=CURRENT_TIMESTAMP
-		WHERE id = $7 AND deleted_at=0
+		WHERE id = $8 AND deleted_at=0
 	`
 
-	_, err := c.db.Exec(context.Background(), query,
-		car.Name, car.Brand,
-		car.Model, car.HoursePower,
-		car.Colour, car.EngineCap, car.Id)
+	_, err := c.db.Exec(ctx, query,
+		car.Name,
+		car.Brand,
+		car.Model,
+		car.HoursePower,
+		car.Colour,
+		car.EngineCap,
+		car.Year,
+		car.Id)
 
 	if err != nil {
 		return "", err
@@ -140,13 +147,13 @@ func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse
 	}
 	return resp, nil
 }
-func (c carRepo) Get(id string) (models.Car, error) {
+func (c carRepo) Get(ctx context.Context, id string) (models.Car, error) {
 	var (
 		car      = models.Car{}
 		updateAt sql.NullString
 	)
 
-	err := c.db.QueryRow(context.Background(), `select 
+	err := c.db.QueryRow(ctx, `select 
 				id, 
 				name,
 				brand,

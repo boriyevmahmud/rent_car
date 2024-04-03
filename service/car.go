@@ -26,3 +26,14 @@ func (u carService) Create(ctx context.Context, car models.Car) (string, error) 
 
 	return pKey, nil
 }
+
+func (u carService) Get(ctx context.Context, id string) (models.Car, error) {
+
+	car, err := u.storage.Car().Get(ctx, id)
+	if err != nil {
+		fmt.Println("ERROR in service layer while creating car", err.Error())
+		return car, err
+	}
+
+	return car, nil
+}

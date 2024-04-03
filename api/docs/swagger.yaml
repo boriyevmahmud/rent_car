@@ -22,6 +22,15 @@ definitions:
       year:
         type: integer
     type: object
+  models.GetAllCarsResponse:
+    properties:
+      cars:
+        items:
+          $ref: '#/definitions/models.Car'
+        type: array
+      count:
+        type: integer
+    type: object
   models.Response:
     properties:
       data: {}
@@ -37,6 +46,34 @@ info:
   version: "1.0"
 paths:
   /car:
+    get:
+      consumes:
+      - application/json
+      description: This api is get a car
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetAllCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get a car
+      tags:
+      - car
     post:
       consumes:
       - application/json
@@ -70,4 +107,44 @@ paths:
       summary: create a car
       tags:
       - car
+  /car/{id}:
+    get:
+      consumes:
+      - application/json
+      description: This api is get a car
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get a car
+      tags:
+      - car
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

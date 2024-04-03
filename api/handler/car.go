@@ -26,6 +26,7 @@ import (
 // @Failure		500  {object}  models.Response
 func (h Handler) CreateCar(c *gin.Context) {
 	car := models.Car{}
+	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&car); err != nil {
 		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
@@ -37,7 +38,7 @@ func (h Handler) CreateCar(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Services.Car().Create(context.Background(), car)
+	id, err := h.Services.Car().Create(ctx, car)
 	if err != nil {
 		handleResponse(c, "error while creating car", http.StatusBadRequest, err.Error())
 		return
@@ -65,7 +66,7 @@ func (h Handler) UpdateCar(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Store.Car().Update(car)
+	id, err := h.Store.Car().Update(context.Background(), car)
 	if err != nil {
 		handleResponse(c, "error while updating car", http.StatusBadRequest, err.Error())
 		return
@@ -74,6 +75,18 @@ func (h Handler) UpdateCar(c *gin.Context) {
 	handleResponse(c, "Updated successfully", http.StatusOK, id)
 }
 
+
+// @Security ApiKeyAuth
+// @Router 		/car [GET]
+// @Summary 	get a car
+// @Description This api is get a car
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Success		200  {object}  models.GetAllCarsResponse
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 func (h Handler) GetAllCars(c *gin.Context) {
 	var (
 		request = models.GetAllCarsRequest{}
@@ -124,4 +137,36 @@ func (h Handler) DeleteCar(c *gin.Context) {
 	}
 
 	handleResponse(c, "", http.StatusOK, id)
+}
+
+// @Security ApiKeyAuth
+// @Router 		/car/{id} [GET]
+// @Summary 	get a car
+// @Description This api is get a car
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param 		id path string true "id" 
+// @Success		200  {object}  models.Car
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
+func (h Handler) GetCar(c *gin.Context) {
+
+	id := c.Param("id")
+
+	_, err := uuid.Parse(id)
+	if err != nil {
+		handleResponse(c, "error while validating id", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	cars, err := h.Services.Car().Get(c.Request.Context(), id)
+	if err != nil {
+		handleResponse(c, "error while gett car", http.StatusBadRequest, err.Error())
+
+		return
+	}
+
+	handleResponse(c, "", http.StatusOK, cars)
 }

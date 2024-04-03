@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"rent-car/api/models"
 	"rent-car/config"
+	"rent-car/pkg/logger"
 	"rent-car/service"
-	"rent-car/storage"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	Store    storage.IStorage
 	Services service.IServiceManager
+	Log      logger.ILogger
 }
 
-func NewStrg(store storage.IStorage, services service.IServiceManager) Handler {
+func NewStrg(services service.IServiceManager, log logger.ILogger) Handler {
 	return Handler{
-		Store:    store,
 		Services: services,
+		Log:      log,
 	}
 }
 
@@ -38,6 +38,31 @@ func handleResponse(c *gin.Context, msg string, statusCode int, data interface{}
 	} else {
 		resp.Description = config.ERR_INTERNAL_SERVER
 		fmt.Println("INTERNAL SERVER ERROR: "+msg, "reason: ", data)
+	}
+
+	resp.StatusCode = statusCode
+	resp.Data = data
+
+	c.JSON(resp.StatusCode, resp)
+}
+
+func handleResponseLog(c *gin.Context, log logger.ILogger, msg string, statusCode int, data interface{}) {
+	resp := models.Response{}
+
+	if statusCode >= 100 && statusCode <= 199 {
+		resp.Description = config.ERR_INFORMATION
+	} else if statusCode >= 200 && statusCode <= 299 {
+		resp.Description = config.SUCCESS
+		log.Info("REQUEST SUCCEEDED", logger.Any("msg: ", msg), logger.Int("status: ", statusCode))
+
+	} else if statusCode >= 300 && statusCode <= 399 {
+		resp.Description = config.ERR_REDIRECTION
+	} else if statusCode >= 400 && statusCode <= 499 {
+		resp.Description = config.ERR_BADREQUEST
+		log.Error("!!!!!!!! BAD REQUEST !!!!!!!!", logger.Any("error: ", msg), logger.Int("status: ", statusCode))
+	} else {
+		resp.Description = config.ERR_INTERNAL_SERVER
+		log.Error("!!!!!!!! ERR_INTERNAL_SERVER !!!!!!!!", logger.Any("error: ", msg), logger.Int("status: ", statusCode))
 	}
 
 	resp.StatusCode = statusCode

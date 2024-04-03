@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 	"rent-car/api/handler"
+	"rent-car/pkg/logger"
 	"rent-car/service"
-	"rent-car/storage"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -19,8 +19,8 @@ import (
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
-func New(services service.IServiceManager, store storage.IStorage) *gin.Engine {
-	h := handler.NewStrg(store, services)
+func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
+	h := handler.NewStrg(services, log)
 
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"rent-car/api"
 	"rent-car/config"
+	"rent-car/pkg/logger"
 	"rent-car/service"
 	"rent-car/storage/postgres"
 )
@@ -20,7 +21,9 @@ func main() {
 
 	services := service.New(store)
 
-	c := api.New(services, store)
+	log := logger.New(cfg.ServiceName)
+
+	c := api.New(services, log)
 
 	fmt.Println("programm is running on localhost:8080...")
 	c.Run(":8080")

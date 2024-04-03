@@ -62,6 +62,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is creates a new car and returns it's id",
                 "consumes": [
                     "application/json"

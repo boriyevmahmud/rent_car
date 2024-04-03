@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	_ "rent-car/api/docs"
@@ -13,6 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// @Security ApiKeyAuth
 // @Router 		/car [POST]
 // @Summary 	create a car
 // @Description This api is creates a new car and returns it's id
@@ -29,22 +29,22 @@ func (h Handler) CreateCar(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&car); err != nil {
-		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
+		handleResponseLog(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := check.ValidateCarYear(car.Year); err != nil {
-		handleResponse(c, "error while validating car year, year: "+strconv.Itoa(car.Year), http.StatusBadRequest, err.Error())
+		handleResponseLog(c, h.Log, "error while validating car year, year: "+strconv.Itoa(car.Year), http.StatusBadRequest, err.Error())
 
 		return
 	}
 
 	id, err := h.Services.Car().Create(ctx, car)
 	if err != nil {
-		handleResponse(c, "error while creating car", http.StatusBadRequest, err.Error())
+		handleResponseLog(c, h.Log, "error while creating car", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	handleResponse(c, "Created successfully", http.StatusOK, id)
+	handleResponseLog(c, h.Log, "Created successfully", http.StatusOK, id)
 }
 
 func (h Handler) UpdateCar(c *gin.Context) {
@@ -66,15 +66,14 @@ func (h Handler) UpdateCar(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Store.Car().Update(context.Background(), car)
-	if err != nil {
-		handleResponse(c, "error while updating car", http.StatusBadRequest, err.Error())
-		return
-	}
+	// id, err := h.Store.Car().Update(context.Background(), car)
+	// if err != nil {
+	// 	handleResponse(c, "error while updating car", http.StatusBadRequest, err.Error())
+	// 	return
+	// }
 
-	handleResponse(c, "Updated successfully", http.StatusOK, id)
+	handleResponse(c, "Updated successfully", http.StatusOK, "id")
 }
-
 
 // @Security ApiKeyAuth
 // @Router 		/car [GET]
@@ -109,14 +108,14 @@ func (h Handler) GetAllCars(c *gin.Context) {
 
 	request.Page = page
 	request.Limit = limit
-	cars, err := h.Store.Car().GetAll(request)
-	if err != nil {
-		handleResponse(c, "error while gettign cars", http.StatusBadRequest, err.Error())
+	// cars, err := h.Services.Car().GetAll(request)
+	// if err != nil {
+	// 	handleResponse(c, "error while gettign cars", http.StatusBadRequest, err.Error())
 
-		return
-	}
+	// 	return
+	// }
 
-	handleResponse(c, "", http.StatusOK, cars)
+	// handleResponse(c, "", http.StatusOK, cars)
 }
 
 func (h Handler) DeleteCar(c *gin.Context) {
@@ -130,11 +129,11 @@ func (h Handler) DeleteCar(c *gin.Context) {
 		return
 	}
 
-	err = h.Store.Car().Delete(id)
-	if err != nil {
-		handleResponse(c, "error while deleting car", http.StatusInternalServerError, err.Error())
-		return
-	}
+	// err = h.Store.Car().Delete(id)
+	// if err != nil {
+	// 	handleResponse(c, "error while deleting car", http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
 	handleResponse(c, "", http.StatusOK, id)
 }
@@ -146,7 +145,7 @@ func (h Handler) DeleteCar(c *gin.Context) {
 // @Tags 		car
 // @Accept		json
 // @Produce		json
-// @Param 		id path string true "id" 
+// @Param 		id path string true "id"
 // @Success		200  {object}  models.Car
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
@@ -157,16 +156,16 @@ func (h Handler) GetCar(c *gin.Context) {
 
 	_, err := uuid.Parse(id)
 	if err != nil {
-		handleResponse(c, "error while validating id", http.StatusBadRequest, err.Error())
+		handleResponseLog(c, h.Log, "error while validating id", http.StatusBadRequest, err.Error())
 		return
 	}
 
 	cars, err := h.Services.Car().Get(c.Request.Context(), id)
 	if err != nil {
-		handleResponse(c, "error while gett car", http.StatusBadRequest, err.Error())
+		handleResponseLog(c, h.Log, "error while gett car", http.StatusBadRequest, err.Error())
 
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, cars)
+	handleResponseLog(c, h.Log, "", http.StatusOK, cars)
 }

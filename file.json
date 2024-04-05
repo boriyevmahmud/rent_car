@@ -1,0 +1,26 @@
+[
+    {
+        "Name": "From postman",
+        "Year": 2020,
+        "Brand": "postman",
+        "Model": "postman",
+        "HoursePower": 100,
+        "Colour": "red",
+        "EngineCap": 1.5
+    },
+    {
+        "FirstName": "firstName",
+        "LastName": "lastName",
+        "Email": "email@gmail.com",
+        "Phone": "+998887008800",
+        "Address": "Toshkent 24"
+    },
+    {
+        "CarId": "f60253d2-cb9a-486a-a6d7-e384363587ab",
+        "CustomerId": "91a548c9-4b55-4ed2-96c4-3ce7c61284a8",
+        "FromDate": "2024-03-18",
+        "ToDate": "2024-03-19",
+        "Status": "active",
+        "Paid": true
+    }
+]

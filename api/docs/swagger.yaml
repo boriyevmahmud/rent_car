@@ -5,11 +5,11 @@ definitions:
         type: string
       colour:
         type: string
-      createdAt:
+      created_at:
         type: string
-      engineCap:
+      engine_cap:
         type: number
-      hoursePower:
+      horse_power:
         type: integer
       id:
         type: string
@@ -17,10 +17,95 @@ definitions:
         type: string
       name:
         type: string
-      updatedAt:
+      updated_at:
         type: string
       year:
         type: integer
+    type: object
+  models.ChangePassword:
+    properties:
+      login:
+        type: string
+      new_password:
+        type: string
+      old_password:
+        type: string
+    type: object
+  models.CreateCarRequest:
+    properties:
+      brand:
+        type: string
+      colour:
+        type: string
+      engine_cap:
+        type: number
+      horse_power:
+        type: integer
+      model:
+        type: string
+      name:
+        type: string
+      year:
+        type: integer
+    type: object
+  models.CreateCustomer:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  models.CreateOrder:
+    properties:
+      car_id:
+        type: string
+      customer_id:
+        type: string
+      from_date:
+        type: string
+      payment_status:
+        type: boolean
+      status:
+        type: string
+      to_date:
+        type: string
+    type: object
+  models.Customer:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/models.Order'
+        type: array
+      orders_count:
+        type: integer
+      phone:
+        type: string
+      unique_cars_count:
+        type: integer
+      updated_at:
+        type: string
     type: object
   models.GetAllCarsResponse:
     properties:
@@ -31,6 +116,149 @@ definitions:
       count:
         type: integer
     type: object
+  models.GetAllCustomersResponse:
+    properties:
+      count:
+        type: integer
+      customers:
+        items:
+          $ref: '#/definitions/models.Customer'
+        type: array
+    type: object
+  models.GetAllOrdersResponse:
+    properties:
+      count:
+        type: integer
+      orders:
+        items:
+          $ref: '#/definitions/models.GetOrderResponse'
+        type: array
+    type: object
+  models.GetAvailableCarsResponse:
+    properties:
+      cars:
+        items:
+          $ref: '#/definitions/models.Car'
+        type: array
+      count:
+        type: integer
+    type: object
+  models.GetCar:
+    properties:
+      brand:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  models.GetCarByIDResponse:
+    properties:
+      brand:
+        type: string
+      colour:
+        type: string
+      created_at:
+        type: string
+      engine_cap:
+        type: number
+      horse_power:
+        type: integer
+      id:
+        type: string
+      model:
+        type: string
+      name:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/models.Car'
+        type: array
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  models.GetCustomer:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+    type: object
+  models.GetCustomerCars:
+    properties:
+      car_name:
+        type: string
+      duration:
+        type: number
+      order_created_at:
+        type: string
+      price:
+        type: number
+    type: object
+  models.GetCustomerCarsResponse:
+    properties:
+      count:
+        type: integer
+      customer_cars:
+        items:
+          $ref: '#/definitions/models.GetCustomerCars'
+        type: array
+    type: object
+  models.GetOrderResponse:
+    properties:
+      car:
+        $ref: '#/definitions/models.GetCar'
+      created_at:
+        type: string
+      customer:
+        $ref: '#/definitions/models.GetCustomer'
+      from_date:
+        type: string
+      id:
+        type: string
+      payment_status:
+        type: boolean
+      status:
+        type: string
+      to_date:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.LoginCustomer:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  models.Order:
+    properties:
+      created_at:
+        type: string
+      from_date:
+        type: string
+      id:
+        type: string
+      payment_status:
+        type: boolean
+      status:
+        type: string
+      to_date:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.Response:
     properties:
       data: {}
@@ -38,6 +266,55 @@ definitions:
         type: string
       statusCode:
         type: integer
+    type: object
+  models.UpdateCarRequest:
+    properties:
+      brand:
+        type: string
+      colour:
+        type: string
+      engine_cap:
+        type: number
+      horse_power:
+        type: integer
+      id:
+        type: string
+      model:
+        type: string
+      name:
+        type: string
+      year:
+        type: integer
+    type: object
+  models.UpdateCustomer:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+    type: object
+  models.UpdateOrder:
+    properties:
+      car_id:
+        type: string
+      customer_id:
+        type: string
+      from_date:
+        type: string
+      id:
+        type: string
+      payment_status:
+        type: boolean
+      status:
+        type: string
+      to_date:
+        type: string
     type: object
 info:
   contact: {}
@@ -49,7 +326,21 @@ paths:
     get:
       consumes:
       - application/json
-      description: This api is get a car
+      description: This api gets all cars and returns their info
+      parameters:
+      - description: cars
+        in: query
+        name: car
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -71,27 +362,27 @@ paths:
             $ref: '#/definitions/models.Response'
       security:
       - ApiKeyAuth: []
-      summary: get a car
+      summary: get all cars
       tags:
       - car
     post:
       consumes:
       - application/json
-      description: This api is creates a new car and returns it's id
+      description: This api creates a new car and returns its id
       parameters:
       - description: car
         in: body
         name: car
         required: true
         schema:
-          $ref: '#/definitions/models.Car'
+          $ref: '#/definitions/models.CreateCarRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/models.Car'
+            type: string
         "400":
           description: Bad Request
           schema:
@@ -110,12 +401,12 @@ paths:
       tags:
       - car
   /car/{id}:
-    get:
+    delete:
       consumes:
       - application/json
-      description: This api is get a car
+      description: This api deletes a car by its id and returns error or nil
       parameters:
-      - description: id
+      - description: car
         in: path
         name: id
         required: true
@@ -125,8 +416,6 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/models.Car'
         "400":
           description: Bad Request
           schema:
@@ -141,9 +430,599 @@ paths:
             $ref: '#/definitions/models.Response'
       security:
       - ApiKeyAuth: []
-      summary: get a car
+      summary: delete a car by its id
       tags:
       - car
+    get:
+      consumes:
+      - application/json
+      description: This api gets a car by its id and returns its info
+      parameters:
+      - description: car
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetCarByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get a car by its id
+      tags:
+      - car
+    put:
+      consumes:
+      - application/json
+      description: This api updates a car by its id and returns its id
+      parameters:
+      - description: car
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: update a car
+      tags:
+      - car
+  /car/available/:
+    get:
+      consumes:
+      - application/json
+      description: This api gets available cars and returns their info
+      parameters:
+      - description: cars
+        in: query
+        name: car
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetAvailableCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get available cars
+      tags:
+      - car
+  /customer:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves information about all customers.
+      parameters:
+      - description: customers
+        in: query
+        name: search
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetAllCustomersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all customers
+      tags:
+      - customer
+    post:
+      consumes:
+      - application/json
+      description: Create a new customer
+      parameters:
+      - description: customer
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a customer
+      tags:
+      - customer
+  /customer/:
+    patch:
+      consumes:
+      - application/json
+      description: This api changes customer password by its login and password and
+        returns message
+      parameters:
+      - description: Change Customer Password
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: customer change password
+      tags:
+      - customer
+  /customer/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This api deletes a customer by its id and returns error or nil
+      parameters:
+      - description: customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: delete a customer by its id
+      tags:
+      - customer
+    get:
+      consumes:
+      - application/json
+      description: This api gets a customer by its id and returns its info
+      parameters:
+      - description: customer
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get a customer by its id
+      tags:
+      - customer
+    put:
+      consumes:
+      - application/json
+      description: This api updates a customer by its id and returns its id
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: customer
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: update a customer
+      tags:
+      - customer
+  /customer/cars:
+    get:
+      consumes:
+      - application/json
+      description: This api gets customer cars and returns their info
+      parameters:
+      - description: Customer ID
+        in: query
+        name: customerID
+        required: true
+        type: string
+      - description: Car Name
+        in: query
+        name: carName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetCustomerCarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get customer's cars
+      tags:
+      - customer
+  /customer/login:
+    post:
+      consumes:
+      - application/json
+      description: This api logs in customer account and returns message
+      parameters:
+      - description: customer
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: customer login
+      tags:
+      - customer
+  /order:
+    get:
+      consumes:
+      - application/json
+      description: This api gets all orders and returns their info
+      parameters:
+      - description: orders
+        in: query
+        name: order
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetAllOrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get all orders
+      tags:
+      - order
+    post:
+      consumes:
+      - application/json
+      description: This api creates a new order and returns its id
+      parameters:
+      - description: order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: create an order
+      tags:
+      - order
+  /order/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This api deletes a order by its id
+      parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: delete an order by its id
+      tags:
+      - order
+    get:
+      consumes:
+      - application/json
+      description: This api gets a order by its id and returns its info
+      parameters:
+      - description: order
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get an order by its id
+      tags:
+      - order
+    put:
+      consumes:
+      - application/json
+      description: This api updates a order by its id and returns its id
+      parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: update an order
+      tags:
+      - order
 securityDefinitions:
   ApiKeyAuth:
     in: header

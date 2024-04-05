@@ -1,11 +1,10 @@
 package handler
 
 import (
-	"fmt"
-	"rent-car/api/models"
-	"rent-car/config"
-	"rent-car/pkg/logger"
-	"rent-car/service"
+	"backend_course/rent_car/api/models"
+	"backend_course/rent_car/config"
+	"backend_course/rent_car/pkg/logger"
+	"backend_course/rent_car/service"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -21,29 +20,6 @@ func NewStrg(services service.IServiceManager, log logger.ILogger) Handler {
 		Services: services,
 		Log:      log,
 	}
-}
-
-func handleResponse(c *gin.Context, msg string, statusCode int, data interface{}) {
-	resp := models.Response{}
-
-	if statusCode >= 100 && statusCode <= 199 {
-		resp.Description = config.ERR_INFORMATION
-	} else if statusCode >= 200 && statusCode <= 299 {
-		resp.Description = config.SUCCESS
-	} else if statusCode >= 300 && statusCode <= 399 {
-		resp.Description = config.ERR_REDIRECTION
-	} else if statusCode >= 400 && statusCode <= 499 {
-		resp.Description = config.ERR_BADREQUEST
-		fmt.Println("BAD REQUEST: "+msg, "reason: ", data)
-	} else {
-		resp.Description = config.ERR_INTERNAL_SERVER
-		fmt.Println("INTERNAL SERVER ERROR: "+msg, "reason: ", data)
-	}
-
-	resp.StatusCode = statusCode
-	resp.Data = data
-
-	c.JSON(resp.StatusCode, resp)
 }
 
 func handleResponseLog(c *gin.Context, log logger.ILogger, msg string, statusCode int, data interface{}) {
@@ -76,28 +52,33 @@ func ParsePageQueryParam(c *gin.Context) (uint64, error) {
 	if pageStr == "" {
 		pageStr = "1"
 	}
+
 	page, err := strconv.ParseUint(pageStr, 10, 30)
 	if err != nil {
 		return 0, err
 	}
+
 	if page == 0 {
 		return 1, nil
 	}
+
 	return page, nil
 }
 
 func ParseLimitQueryParam(c *gin.Context) (uint64, error) {
 	limitStr := c.Query("limit")
 	if limitStr == "" {
-		limitStr = "10"
+		limitStr = "2"
 	}
+
 	limit, err := strconv.ParseUint(limitStr, 10, 30)
 	if err != nil {
 		return 0, err
 	}
 
 	if limit == 0 {
-		return 10, nil
+		return 2, nil
 	}
+
 	return limit, nil
 }

@@ -1,19 +1,43 @@
 package storage
 
 import (
+	"backend_course/rent_car/api/models"
 	"context"
-	"rent-car/api/models"
 )
 
 type IStorage interface {
 	CloseDB()
 	Car() ICarStorage
+	Customer() ICustomerStorage
+	Order() IOrderStorage
 }
 
 type ICarStorage interface {
-	Create(context.Context, models.Car) (string, error)
-	Get(context.Context,string) (models.Car, error)
-	GetAll(request models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
-	Update(context.Context, models.Car) (string, error)
-	Delete(string) error
+	Create(ctx context.Context, car models.CreateCarRequest) (string, error)
+	Update(ctx context.Context, car models.UpdateCarRequest) (string, error)
+	GetByID(ctx context.Context, id string) (models.GetCarByIDResponse, error)
+	GetAll(ctx context.Context, req models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
+	GetAvailable(ctx context.Context, req models.GetAvailableCarsRequest) (models.GetAvailableCarsResponse, error)
+	Delete(ctx context.Context, id string) error
+}
+
+type ICustomerStorage interface {
+	Create(ctx context.Context, customer models.CreateCustomer) (string, error)
+	Update(ctx context.Context, customer models.UpdateCustomer, id string) (string, error)
+	Login(ctx context.Context, pass models.LoginCustomer) (string, error)
+	ChangePassword(ctx context.Context, pass models.ChangePassword) (string, error)
+	GetByID(ctx context.Context, id string) (models.Customer, error)
+	GetAll(ctx context.Context, req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
+	GetCustomerCars(ctx context.Context, name string, id string, boolean bool) (models.GetCustomerCarsResponse, error)
+	Delete(ctx context.Context, id string) error
+	GetPassword(ctx context.Context, phone string) (string, error)
+}
+
+type IOrderStorage interface {
+	Create(ctx context.Context, order models.CreateOrder) (string, error)
+	Update(ctx context.Context, order models.UpdateOrder) (string, error)
+	GetByID(ctx context.Context, id string) (models.GetOrderResponse, error)
+	GetAll(ctx context.Context, req models.GetAllOrdersRequest) (models.GetAllOrdersResponse, error)
+	Delete(ctx context.Context, id string) error
+	DeleteHard(ctx context.Context, id string) error
 }

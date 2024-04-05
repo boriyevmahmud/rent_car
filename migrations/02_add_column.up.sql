@@ -1,0 +1,17 @@
+ALTER TABLE cars
+ADD COLUMN price DECIMAL(10, 2);
+
+ALTER TABLE customers
+ADD COLUMN password VARCHAR(255);
+
+ALTER TABLE customers
+ALTER COLUMN password SET NOT NULL;
+
+ALTER TABLE customers
+ADD COLUMN login VARCHAR(255);
+
+ALTER TABLE customers
+ALTER COLUMN login SET NOT NULL;
+
+ALTER TABLE customers
+ADD CONSTRAINT unique_login UNIQUE (login);

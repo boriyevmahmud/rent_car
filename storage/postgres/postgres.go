@@ -1,22 +1,23 @@
 package postgres
 
 import (
+	"backend_course/rent_car/config"
+	"backend_course/rent_car/pkg/logger"
+	"backend_course/rent_car/storage"
 	"context"
 	"fmt"
-	"rent-car/config"
-	"rent-car/storage"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-
 	_ "github.com/lib/pq"
 )
 
 type Store struct {
-	Pool *pgxpool.Pool
+	Pool   *pgxpool.Pool
+	logger logger.ILogger
 }
 
-func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
+func New(ctx context.Context, cfg config.Config, logger logger.ILogger) (storage.IStorage, error) {
 	url := fmt.Sprintf(`host=%s port=%v user=%s password=%s database=%s sslmode=disable`,
 		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDatabase)
 
@@ -35,15 +36,29 @@ func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
 	}
 
 	return Store{
-		Pool: newPool,
+		Pool:   newPool,
+		logger: logger,
 	}, nil
 }
+
 func (s Store) CloseDB() {
 	s.Pool.Close()
 }
 
 func (s Store) Car() storage.ICarStorage {
-	newCar := NewCar(s.Pool)
+	newCar := NewCarRepo(s.Pool, s.logger)
 
 	return &newCar
+}
+
+func (s Store) Customer() storage.ICustomerStorage {
+	newCustomer := NewCustomerRepo(s.Pool, s.logger)
+
+	return &newCustomer
+}
+
+func (s Store) Order() storage.IOrderStorage {
+	newOrder := NewOrderRepo(s.Pool, s.logger)
+
+	return &newOrder
 }

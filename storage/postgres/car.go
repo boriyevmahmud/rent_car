@@ -1,195 +1,355 @@
 package postgres
 
 import (
+	"backend_course/rent_car/api/models"
+	"backend_course/rent_car/pkg/logger"
 	"context"
 	"database/sql"
 	"fmt"
-	"rent-car/api/models"
-	"rent-car/pkg"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type carRepo struct {
-	db *pgxpool.Pool
+type CarRepo struct {
+	db     *pgxpool.Pool
+	logger logger.ILogger
 }
 
-func NewCar(db *pgxpool.Pool) carRepo {
-	return carRepo{
-		db: db,
+func NewCarRepo(db *pgxpool.Pool, log logger.ILogger) CarRepo {
+	return CarRepo{
+		db:     db,
+		logger: log,
 	}
 }
 
-/*
-create (body) id,err
-update (body) id,err
-delete (id) err
-get (id) body,err
-getAll (search) []body,count,err
-*/
+func (c *CarRepo) Create(ctx context.Context, car models.CreateCarRequest) (string, error) {
+	id := uuid.New().String()
 
-func (c *carRepo) Create(ctx context.Context, car models.Car) (string, error) {
-
-	id := uuid.New()
-
-	query := ` INSERT INTO cars (
+	query := `INSERT INTO cars (
 		id,
 		name,
+		year,
 		brand,
 		model,
-		hourse_power,
+		horse_power,
 		colour,
 		engine_cap,
-		year)
-		VALUES($1,$2,$3,$4,$5,$6,$7,$8) 
-	`
+		created_at,
+		updated_at
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
 
 	_, err := c.db.Exec(ctx, query,
-		id.String(),
-		car.Name, car.Brand,
-		car.Model, car.HoursePower,
-		car.Colour, car.EngineCap,
-		car.Year)
+		id,
+		car.Name,
+		car.Year,
+		car.Brand,
+		car.Model,
+		car.HorsePower,
+		car.Colour,
+		car.EngineCap,
+	)
 
 	if err != nil {
+		c.logger.Error("failed to create car in database", logger.Error(err))
 		return "", err
 	}
 
-	return id.String(), nil
+	return id, nil
 }
 
-func (c *carRepo) Update(ctx context.Context, car models.Car) (string, error) {
-
-	fmt.Println("car.id", car.Id)
-	query := ` UPDATE cars set
-			name=$1,
-			brand=$2,
-			model=$3,
-			hourse_power=$4,
-			colour=$5,
-			engine_cap=$6,
-			year = $7,
-			updated_at=CURRENT_TIMESTAMP
-		WHERE id = $8 AND deleted_at=0
-	`
+func (c *CarRepo) Update(ctx context.Context, car models.UpdateCarRequest) (string, error) {
+	query := `UPDATE cars SET
+		name = $1,
+		year = $2,
+		brand = $3,
+		model = $4,
+		horse_power = $5,
+		colour = $6,
+		engine_cap = $7,
+		updated_at = CURRENT_TIMESTAMP
+	WHERE id = $8`
 
 	_, err := c.db.Exec(ctx, query,
 		car.Name,
+		car.Year,
 		car.Brand,
 		car.Model,
-		car.HoursePower,
+		car.HorsePower,
 		car.Colour,
 		car.EngineCap,
-		car.Year,
-		car.Id)
+		car.ID,
+	)
 
 	if err != nil {
+		c.logger.Error("failed to update car in database", logger.Error(err))
 		return "", err
 	}
 
-	return car.Id, nil
+	return car.ID, nil
 }
 
-func (c carRepo) GetAll(req models.GetAllCarsRequest) (models.GetAllCarsResponse, error) {
+func (c *CarRepo) GetByID(ctx context.Context, id string) (models.GetCarByIDResponse, error) {
 	var (
-		resp   = models.GetAllCarsResponse{}
-		filter = ""
-	)
-	offset := (req.Page - 1) * req.Limit
-
-	if req.Search != "" {
-		filter += fmt.Sprintf(` and name ILIKE  '%%%v%%' `, req.Search)
-	}
-
-	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
-	fmt.Println("filter: ", filter)
-	rows, err := c.db.Query(context.Background(), `select 
-				count(id) OVER(),
-				id, 
-				name,
-				brand,
-				model,
-				year,
-				hourse_power,
-				colour,
-				engine_cap,
-				--created_at::date,
-				updated_at
-	  FROM cars WHERE deleted_at = 0 `+filter+`
-	  `)
-	if err != nil {
-		return resp, err
-	}
-	for rows.Next() {
-		var (
-			car      = models.Car{}
-			updateAt sql.NullString
-		)
-
-		if err := rows.Scan(
-			&resp.Count,
-			&car.Id,
-			&car.Name,
-			&car.Brand,
-			&car.Model,
-			&car.Year,
-			&car.HoursePower,
-			&car.Colour,
-			&car.EngineCap,
-			// &car.CreatedAt,
-			&updateAt); err != nil {
-			return resp, err
-		}
-
-		car.UpdatedAt = pkg.NullStringToString(updateAt)
-		resp.Cars = append(resp.Cars, car)
-	}
-	return resp, nil
-}
-func (c carRepo) Get(ctx context.Context, id string) (models.Car, error) {
-	var (
-		car      = models.Car{}
-		updateAt sql.NullString
+		car        = models.GetCarByIDResponse{}
+		name       sql.NullString
+		year       sql.NullInt64
+		brand      sql.NullString
+		model      sql.NullString
+		horsepower sql.NullInt64
+		colour     sql.NullString
+		enginecap  sql.NullFloat64
+		createdat  sql.NullString
+		updatedat  sql.NullString
 	)
 
-	err := c.db.QueryRow(ctx, `select 
-				id, 
-				name,
-				brand,
-				model,
-				year,
-				hourse_power,
-				colour,
-				engine_cap,
-				updated_at
-	  FROM cars WHERE deleted_at = 0 and id =$1
-	  `, id).Scan(&car.Id,
-		&car.Name,
-		&car.Brand,
-		&car.Model,
-		&car.Year,
-		&car.HoursePower,
-		&car.Colour,
-		&car.EngineCap,
-		&updateAt)
+	query := `SELECT
+		id,
+		name,
+		year,
+		brand,
+		model,
+		horse_power,
+		colour,
+		engine_cap,
+		created_at,
+		updated_at
+	FROM cars
+	WHERE id = $1 and deleted_at = 0`
+
+	row := c.db.QueryRow(ctx, query, id)
+
+	err := row.Scan(
+		&car.ID,
+		&name,
+		&year,
+		&brand,
+		&model,
+		&horsepower,
+		&colour,
+		&enginecap,
+		&createdat,
+		&updatedat,
+	)
+
 	if err != nil {
-		return car, err
+		c.logger.Error("failed to get car by ID from database", logger.Error(err))
+		return models.GetCarByIDResponse{}, err
 	}
-	car.UpdatedAt = pkg.NullStringToString(updateAt)
+
+	car.Name = name.String
+	car.Year = year.Int64
+	car.Brand = brand.String
+	car.Model = model.String
+	car.HorsePower = horsepower.Int64
+	car.Colour = colour.String
+	car.EngineCap = float32(enginecap.Float64)
+	car.CreatedAt = createdat.String
+	car.UpdatedAt = updatedat.String
 
 	return car, nil
 }
 
-func (c *carRepo) Delete(id string) error {
+func (c *CarRepo) GetAll(ctx context.Context, req models.GetAllCarsRequest) (models.GetAllCarsResponse, error) {
+	var (
+		resp       = models.GetAllCarsResponse{}
+		name       sql.NullString
+		year       sql.NullInt64
+		brand      sql.NullString
+		model      sql.NullString
+		horsepower sql.NullInt64
+		colour     sql.NullString
+		enginecap  sql.NullFloat64
+		createdat  sql.NullString
+		updatedat  sql.NullString
+		filter     string
+	)
 
-	query := ` UPDATE cars set
-			deleted_at = date_part('epoch', CURRENT_TIMESTAMP)::int
-		WHERE id = $1 AND deleted_at=0
-	`
+	offset := (req.Page - 1) * req.Limit
 
-	_, err := c.db.Exec(context.Background(), query, id)
+	if req.Search != "" {
+		filter = fmt.Sprintf(` AND (name ILIKE '%%%v%%' OR brand ILIKE '%%%v%%' OR model ILIKE '%%%v%%')`, req.Search, req.Search, req.Search)
+	}
+
+	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
+
+	query := `SELECT 
+		id, 
+		name, 
+		year, 
+		brand, 
+		model, 
+		horse_power, 
+		colour, 
+		engine_cap, 
+		created_at, 
+		updated_at
+	FROM cars WHERE deleted_at = 0` + filter
+
+	rows, err := c.db.Query(ctx, query)
 	if err != nil {
+		c.logger.Error("failed to get all cars from database", logger.Error(err))
+		return resp, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var car models.Car
+
+		err := rows.Scan(
+			&car.ID,
+			&name,
+			&year,
+			&brand,
+			&model,
+			&horsepower,
+			&colour,
+			&enginecap,
+			&createdat,
+			&updatedat,
+		)
+
+		if err != nil {
+			c.logger.Error("failed to scan  all cars from database", logger.Error(err))
+			return models.GetAllCarsResponse{}, err
+		}
+
+		resp.Cars = append(resp.Cars, models.Car{
+			ID:         car.ID,
+			Name:       name.String,
+			Year:       year.Int64,
+			Brand:      brand.String,
+			Model:      model.String,
+			HorsePower: horsepower.Int64,
+			Colour:     colour.String,
+			EngineCap:  float32(enginecap.Float64),
+			CreatedAt:  createdat.String,
+			UpdatedAt:  updatedat.String,
+		})
+	}
+
+	countQuery := `SELECT COUNT(id) FROM cars`
+	err = c.db.QueryRow(ctx, countQuery).Scan(&resp.Count)
+	if err != nil {
+		c.logger.Error("failed to get cars count from database", logger.Error(err))
+		return resp, err
+	}
+
+	return resp, nil
+}
+
+func (c *CarRepo) GetAvailable(ctx context.Context, req models.GetAvailableCarsRequest) (models.GetAvailableCarsResponse, error) {
+	var (
+		cars       models.GetAvailableCarsResponse
+		count      uint64
+		filter     string
+		name       sql.NullString
+		year       sql.NullInt64
+		brand      sql.NullString
+		model      sql.NullString
+		horsepower sql.NullInt64
+		colour     sql.NullString
+		enginecap  sql.NullFloat64
+		createdat  sql.NullString
+		updatedat  sql.NullString
+	)
+	offset := (req.Page - 1) * req.Limit
+
+	if req.Search != "" {
+		filter = fmt.Sprintf(` AND (name ILIKE '%%%v%%' OR brand ILIKE '%%%v%%' OR model ILIKE '%%%v%%')`, req.Search, req.Search, req.Search)
+	}
+
+	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
+
+	query := `SELECT
+			id,
+			name,
+			year,
+			brand,
+			model,
+			horse_power,
+			colour,
+			engine_cap,
+			created_at,
+			updated_at
+		FROM cars
+		WHERE id NOT IN (
+			SELECT DISTINCT car_id
+			FROM orders
+			WHERE from_date <= NOW() AND to_date >= NOW()
+		)
+	` + filter
+
+	rows, err := c.db.Query(ctx, query)
+	if err != nil {
+		c.logger.Error("failed to get available cars from database", logger.Error(err))
+		return models.GetAvailableCarsResponse{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var car models.Car
+		err := rows.Scan(
+			&car.ID,
+			&name,
+			&year,
+			&brand,
+			&model,
+			&horsepower,
+			&colour,
+			&enginecap,
+			&createdat,
+			&updatedat,
+		)
+
+		if err != nil {
+			c.logger.Error("failed to scan available cars from database", logger.Error(err))
+			return models.GetAvailableCarsResponse{}, err
+		}
+
+		cars.Cars = append(cars.Cars, models.Car{
+			ID:         car.ID,
+			Name:       name.String,
+			Year:       year.Int64,
+			Brand:      brand.String,
+			Model:      model.String,
+			HorsePower: horsepower.Int64,
+			Colour:     colour.String,
+			EngineCap:  float32(enginecap.Float64),
+			CreatedAt:  createdat.String,
+			UpdatedAt:  updatedat.String,
+		})
+	}
+
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS subquery", query)
+	err = c.db.QueryRow(ctx, countQuery).Scan(&count)
+	cars.Count = count
+	if err != nil {
+		c.logger.Error("failed to get count of available cars", logger.Error(err))
+		return models.GetAvailableCarsResponse{}, err
+	}
+
+	return cars, nil
+}
+
+func (c *CarRepo) Delete(ctx context.Context, id string) error {
+	query := `UPDATE cars SET deleted_at = date_part('epoch', CURRENT_TIMESTAMP)::int WHERE id = $1 AND deleted_at = 0`
+
+	_, err := c.db.Exec(ctx, query, id)
+	if err != nil {
+		c.logger.Error("failed to delete car", logger.Error(err), logger.String("car_id", id))
+		return err
+	}
+
+	return nil
+}
+
+func (c *CarRepo) DeleteHard(ctx context.Context, id string) error {
+	query := `DELETE FROM cars WHERE id = $1`
+
+	_, err := c.db.Exec(ctx, query, id)
+	if err != nil {
+		c.logger.Error("failed to hard delete car", logger.Error(err), logger.String("car_id", id))
 		return err
 	}
 

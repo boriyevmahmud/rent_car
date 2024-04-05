@@ -4,22 +4,26 @@ import (
 	"context"
 	"fmt"
 	"rent-car/api/models"
+	"rent-car/pkg/logger"
 	"rent-car/storage"
 )
 
 type carService struct {
 	storage storage.IStorage
+	log     logger.ILogger
 }
 
-func NewCarService(storage storage.IStorage) carService {
+func NewCarService(storage storage.IStorage, log logger.ILogger) carService {
 	return carService{
 		storage: storage,
+		log:     log,
 	}
 }
 func (u carService) Create(ctx context.Context, car models.Car) (string, error) {
 
 	pKey, err := u.storage.Car().Create(ctx, car)
 	if err != nil {
+		u.log.Error("")
 		fmt.Println("ERROR in service layer while creating car", err.Error())
 		return "", err
 	}

@@ -21,6 +21,7 @@ type Customer struct {
 	Orders          []Order `json:"orders,omitempty"`
 	OrdersCount     int64   `json:"orders_count"`
 	UniqueCarsCount int64   `json:"unique_cars_count"`
+	Password        string  `json:"password,omitempty"`
 }
 
 type CreateCustomer struct {

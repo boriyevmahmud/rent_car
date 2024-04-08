@@ -7,3 +7,5 @@ const (
 	ERR_BADREQUEST      = "Bad request"
 	ERR_INTERNAL_SERVER = "While the request appears to be valid, the server could not complete the request"
 )
+
+var SignedKey = []byte("MGJd@Ro]yKoCc)mVY1^c:upz~4rn9Pt!hYd]>c8dt#+%")

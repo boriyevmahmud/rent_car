@@ -2,7 +2,7 @@ package service
 
 import (
 	"backend_course/rent_car/api/models"
-	"backend_course/rent_car/pkg/hash"
+	"backend_course/rent_car/pkg/password"
 	"backend_course/rent_car/pkg/logger"
 	"backend_course/rent_car/storage"
 	"context"
@@ -46,7 +46,7 @@ func (s customerService) Login(ctx context.Context, req models.LoginCustomer) (s
 		return "", err
 	}
 
-	err = hash.CompareHashAndPassword(hashedPswd, req.Password)
+	err = password.CompareHashAndPassword(hashedPswd, req.Password)
 	if err != nil {
 		s.logger.Error("incorrect password", logger.Error(err))
 		return "", err

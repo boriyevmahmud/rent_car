@@ -100,11 +100,27 @@ definitions:
         type: array
       orders_count:
         type: integer
+      password:
+        type: string
       phone:
         type: string
       unique_cars_count:
         type: integer
       updated_at:
+        type: string
+    type: object
+  models.CustomerLoginRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  models.CustomerLoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
         type: string
     type: object
   models.GetAllCarsResponse:
@@ -233,13 +249,6 @@ definitions:
       to_date:
         type: string
       updated_at:
-        type: string
-    type: object
-  models.LoginCustomer:
-    properties:
-      password:
-        type: string
-      phone:
         type: string
     type: object
   models.Order:
@@ -806,21 +815,21 @@ paths:
     post:
       consumes:
       - application/json
-      description: This api logs in customer account and returns message
+      description: Customer login
       parameters:
-      - description: customer
+      - description: login
         in: body
-        name: customer
+        name: login
         required: true
         schema:
-          $ref: '#/definitions/models.LoginCustomer'
+          $ref: '#/definitions/models.CustomerLoginRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            type: string
+            $ref: '#/definitions/models.CustomerLoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -833,9 +842,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: customer login
+      summary: Customer login
       tags:
-      - customer
+      - auth
   /order:
     get:
       consumes:

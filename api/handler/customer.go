@@ -3,7 +3,7 @@ package handler
 import (
 	"backend_course/rent_car/api/models"
 	"backend_course/rent_car/pkg/check"
-	"backend_course/rent_car/pkg/hash"
+	"backend_course/rent_car/pkg/password"
 	"context"
 	"fmt"
 	"net/http"
@@ -40,7 +40,7 @@ func (h Handler) CreateCustomer(c *gin.Context) {
 		return
 	}
 
-	hashedPass, err := hash.HashPassword(customer.Password)
+	hashedPass, err := password.HashPassword(customer.Password)
 	if err != nil {
 		handleResponseLog(c, h.Log, "error while generating customer password", http.StatusInternalServerError, err.Error())
 		return
@@ -99,39 +99,39 @@ func (h Handler) UpdateCustomer(c *gin.Context) {
 	handleResponseLog(c, h.Log, "Customer was successfully updated", http.StatusOK, ID)
 }
 
-// LoginCustomer godoc
-// @Router		/customer/login [POST]
-// @Summary		customer login
-// @Description This api logs in customer account and returns message
-// @Tags		customer
-// @Accept		json
-// @Produce		json
-// @Param		customer body models.LoginCustomer true "customer"
-// @Success		200  {object}  string
-// @Failure		400  {object}  models.Response
-// @Failure		404  {object}  models.Response
-// @Failure		500  {object}  models.Response
-func (h Handler) LoginCustomer(c *gin.Context) {
-	login := models.LoginCustomer{}
+// // LoginCustomer godoc
+// // @Router		/customer/login [POST]
+// // @Summary		customer login
+// // @Description This api logs in customer account and returns message
+// // @Tags		customer
+// // @Accept		json
+// // @Produce		json
+// // @Param		customer body models.LoginCustomer true "customer"
+// // @Success		200  {object}  string
+// // @Failure		400  {object}  models.Response
+// // @Failure		404  {object}  models.Response
+// // @Failure		500  {object}  models.Response
+// func (h Handler) LoginCustomer(c *gin.Context) {
+// 	login := models.LoginCustomer{}
 
-	if err := c.ShouldBindJSON(&login); err != nil {
-		handleResponseLog(c, h.Log, "error while decoding request body", http.StatusBadRequest, err.Error())
-		return
-	}
+// 	if err := c.ShouldBindJSON(&login); err != nil {
+// 		handleResponseLog(c, h.Log, "error while decoding request body", http.StatusBadRequest, err.Error())
+// 		return
+// 	}
 
-	if err := check.ValidatePassword(login.Password); err != nil {
-		handleResponseLog(c, h.Log, "error while validating password", http.StatusBadRequest, err.Error())
-		return
-	}
+// 	if err := check.ValidatePassword(login.Password); err != nil {
+// 		handleResponseLog(c, h.Log, "error while validating password", http.StatusBadRequest, err.Error())
+// 		return
+// 	}
 
-	msg, err := h.Services.Customer().Login(c.Request.Context(), login)
-	if err != nil {
-		handleResponseLog(c, h.Log, "error while logging", http.StatusInternalServerError, err.Error())
-		return
-	}
+// 	msg, err := h.Services.Customer().Login(c.Request.Context(), login)
+// 	if err != nil {
+// 		handleResponseLog(c, h.Log, "error while logging", http.StatusInternalServerError, err.Error())
+// 		return
+// 	}
 
-	handleResponseLog(c, h.Log, "", http.StatusOK, msg)
-}
+// 	handleResponseLog(c, h.Log, "", http.StatusOK, msg)
+// }
 
 // LoginCustomer godoc
 // @Security ApiKeyAuth

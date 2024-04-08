@@ -601,7 +601,7 @@ const docTemplate = `{
         },
         "/customer/login": {
             "post": {
-                "description": "This api logs in customer account and returns message",
+                "description": "Customer login",
                 "consumes": [
                     "application/json"
                 ],
@@ -609,25 +609,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "customer"
+                    "auth"
                 ],
-                "summary": "customer login",
+                "summary": "Customer login",
                 "parameters": [
                     {
-                        "description": "customer",
-                        "name": "customer",
+                        "description": "login",
+                        "name": "login",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.LoginCustomer"
+                            "$ref": "#/definitions/models.CustomerLoginRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.CustomerLoginResponse"
                         }
                     },
                     "400": {
@@ -1266,6 +1266,9 @@ const docTemplate = `{
                 "orders_count": {
                     "type": "integer"
                 },
+                "password": {
+                    "type": "string"
+                },
                 "phone": {
                     "type": "string"
                 },
@@ -1273,6 +1276,28 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CustomerLoginRequest": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CustomerLoginResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
                     "type": "string"
                 }
             }
@@ -1470,17 +1495,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.LoginCustomer": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
                     "type": "string"
                 }
             }

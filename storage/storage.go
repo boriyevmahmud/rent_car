@@ -31,6 +31,7 @@ type ICustomerStorage interface {
 	GetCustomerCars(ctx context.Context, name string, id string, boolean bool) (models.GetCustomerCarsResponse, error)
 	Delete(ctx context.Context, id string) error
 	GetPassword(ctx context.Context, phone string) (string, error)
+	GetByLogin(context.Context, string) (models.Customer, error)
 }
 
 type IOrderStorage interface {

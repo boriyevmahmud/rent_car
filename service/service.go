@@ -9,12 +9,14 @@ type IServiceManager interface {
 	Car() carService
 	Customer() customerService
 	Order() orderService
+	Auth() authService
 }
 
 type Service struct {
 	carService      carService
 	customerService customerService
 	orderService    orderService
+	auth            authService
 
 	logger logger.ILogger
 }
@@ -24,6 +26,7 @@ func New(storage storage.IStorage, log logger.ILogger) Service {
 		carService:      NewCarService(storage, log),
 		customerService: NewCustomerService(storage, log),
 		orderService:    NewOrderService(storage, log),
+		auth:            NewAuthService(storage, log),
 		logger:          log,
 	}
 }
@@ -38,4 +41,8 @@ func (s Service) Customer() customerService {
 
 func (s Service) Order() orderService {
 	return s.orderService
+}
+
+func (s Service) Auth() authService {
+	return s.auth
 }

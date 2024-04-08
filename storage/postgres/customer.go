@@ -297,6 +297,63 @@ func (c *CustomerRepo) GetByID(ctx context.Context, id string) (models.Customer,
 	return customer, nil
 }
 
+func (c *CustomerRepo) GetByLogin(ctx context.Context, login string) (models.Customer, error) {
+	var (
+		firstname sql.NullString
+		lastname  sql.NullString
+		phone     sql.NullString
+		email     sql.NullString
+		address   sql.NullString
+		createdat sql.NullString
+		updatedat sql.NullString
+	)
+
+	query := `SELECT 
+		id, 
+		first_name, 
+		last_name, 
+		phone,
+		email,
+		address,
+		created_at, 
+		updated_at,
+		password
+		FROM customers WHERE phone = $1 AND deleted_at = 0`
+
+	row := c.db.QueryRow(ctx, query, login)
+
+	customer := models.Customer{
+		Orders: []models.Order{},
+	}
+
+	err := row.Scan(
+		&customer.ID,
+		&firstname,
+		&lastname,
+		&phone,
+		&email,
+		&address,
+		&createdat,
+		&updatedat,
+		&customer.Password,
+	)
+
+	if err != nil {
+		c.logger.Error("failed to scan customer by LOGIN from database", logger.Error(err))
+		return models.Customer{}, err
+	}
+
+	customer.FirstName = firstname.String
+	customer.LastName = lastname.String
+	customer.Phone = phone.String
+	customer.Email = email.String
+	customer.Address = address.String
+	customer.CreatedAt = createdat.String
+	customer.UpdatedAt = updatedat.String
+
+	return customer, nil
+}
+
 func (c *CustomerRepo) GetAll(ctx context.Context, req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error) {
 	var (
 		resp      = models.GetAllCustomersResponse{}

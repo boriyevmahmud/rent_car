@@ -46,5 +46,33 @@ func GenJWT(m map[interface{}]interface{}) (string, string, error) {
 	}
 
 	return accessTokenString, refreshTokenString, nil
-
 }
+
+func ExtractClaims(tokenStr string) (jwt.MapClaims, error) {
+	var (
+		token *jwt.Token
+		err   error
+	)
+	token, err = jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		// check token signing method etc
+		return config.SignedKey, nil
+	})
+	if err != nil {
+		token, err = jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			// check token signing method etc
+			return config.SignedKey, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !(ok && token.Valid) {
+		err = fmt.Errorf("Invalid JWT Token")
+		return nil, err
+	}
+	return claims, nil
+}
+
+

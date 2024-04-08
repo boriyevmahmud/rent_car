@@ -3,8 +3,10 @@ package handler
 import (
 	"backend_course/rent_car/api/models"
 	"backend_course/rent_car/config"
+	"backend_course/rent_car/pkg/jwt"
 	"backend_course/rent_car/pkg/logger"
 	"backend_course/rent_car/service"
+	"errors"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -81,4 +83,26 @@ func ParseLimitQueryParam(c *gin.Context) (uint64, error) {
 	}
 
 	return limit, nil
+}
+
+func getAuthInfo(c *gin.Context) (models.AuthInfo, error) {
+	accessToken := c.GetHeader("Authorization")
+	if accessToken == "" {
+		return models.AuthInfo{}, errors.New("unauthorized")
+	}
+
+	m, err := jwt.ExtractClaims(accessToken)
+	if err != nil {
+		return models.AuthInfo{}, err
+	}
+
+	role := m["user_role"].(string)
+	if !(role == config.ADMIN_ROLE || role == config.CUSTOMER_ROLE) {
+		return models.AuthInfo{}, errors.New("unauthorized")
+	}
+
+	return models.AuthInfo{
+		UserID:   m["user_id"].(string),
+		UserRole: role,
+	}, nil
 }

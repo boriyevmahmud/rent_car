@@ -2,6 +2,7 @@ package handler
 
 import (
 	"backend_course/rent_car/api/models"
+	"backend_course/rent_car/config"
 	"context"
 	"net/http"
 	"strconv"
@@ -26,12 +27,23 @@ import (
 func (h Handler) CreateOrder(c *gin.Context) {
 	var order models.CreateOrder
 
+	data, err := getAuthInfo(c)
+	if err != nil {
+		handleResponseLog(c, h.Log, "error while getting auth", http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	if err := c.ShouldBindJSON(&order); err != nil {
 		handleResponseLog(c, h.Log, "error while decoding request body", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id, err := h.Services.Order().Create(context.Background(), order)
+	//TODO: need validate body
+
+	order.Status = config.STATUS_NEW
+	order.CustomerId = data.UserID
+
+	id, err := h.Services.Order().Create(c.Request.Context(), order)
 	if err != nil {
 		handleResponseLog(c, h.Log, "error while creating order", http.StatusInternalServerError, err.Error())
 		return

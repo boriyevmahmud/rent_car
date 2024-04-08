@@ -2,6 +2,7 @@ package service
 
 import (
 	"backend_course/rent_car/api/models"
+	"backend_course/rent_car/config"
 	"backend_course/rent_car/pkg/jwt"
 	"backend_course/rent_car/pkg/logger"
 	"backend_course/rent_car/pkg/password"
@@ -38,7 +39,7 @@ func (a authService) CustomerLogin(ctx context.Context, loginRequest models.Cust
 	m := make(map[interface{}]interface{})
 
 	m["user_id"] = customer.ID
-	m["user_role"] = "customer"
+	m["user_role"] = config.CUSTOMER_ROLE
 
 	accessToken, refreshToken, err := jwt.GenJWT(m)
 	if err != nil {

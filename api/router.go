@@ -26,9 +26,10 @@ func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
 
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	
+
 	// r.Use(authMiddleware)
 	r.POST("/customer/login", h.CustomerLogin)
+	r.POST("/customer/register", h.CustomerRegister)
 
 	r.POST("/car", h.CreateCar)
 	r.PUT("/car/:id", h.UpdateCar)

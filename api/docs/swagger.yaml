@@ -123,6 +123,11 @@ definitions:
       refresh_token:
         type: string
     type: object
+  models.CustomerRegisterRequest:
+    properties:
+      mail:
+        type: string
+    type: object
   models.GetAllCarsResponse:
     properties:
       cars:
@@ -843,6 +848,40 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: Customer login
+      tags:
+      - auth
+  /customer/register:
+    post:
+      consumes:
+      - application/json
+      description: Customer register
+      parameters:
+      - description: register
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/models.CustomerRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Customer register
       tags:
       - auth
   /order:

@@ -14,3 +14,7 @@ type AuthInfo struct {
 	UserID   string `json:"user_id"`
 	UserRole string `json:"user_role"`
 }
+
+type CustomerRegisterRequest struct {
+	Mail string `json:"mail"`
+}

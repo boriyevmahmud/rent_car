@@ -21,12 +21,12 @@ type Service struct {
 	logger logger.ILogger
 }
 
-func New(storage storage.IStorage, log logger.ILogger) Service {
+func New(storage storage.IStorage, log logger.ILogger, redis storage.IRedisStorage) Service {
 	return Service{
 		carService:      NewCarService(storage, log),
 		customerService: NewCustomerService(storage, log),
 		orderService:    NewOrderService(storage, log),
-		auth:            NewAuthService(storage, log),
+		auth:            NewAuthService(storage, log, redis),
 		logger:          log,
 	}
 }

@@ -27,7 +27,7 @@ func main() {
 	}
 	defer store.CloseDB()
 
-	services := service.New(store, log)
+	services := service.New(store, log, newRedis)
 	server := api.New(services, log)
 
 	fmt.Println("programm is running on localhost:8080...")

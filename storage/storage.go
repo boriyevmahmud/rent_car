@@ -3,6 +3,7 @@ package storage
 import (
 	"backend_course/rent_car/api/models"
 	"context"
+	"time"
 )
 
 type IStorage interface {
@@ -10,6 +11,7 @@ type IStorage interface {
 	Car() ICarStorage
 	Customer() ICustomerStorage
 	Order() IOrderStorage
+	Redis() IRedisStorage
 }
 
 type ICarStorage interface {
@@ -41,4 +43,10 @@ type IOrderStorage interface {
 	GetAll(ctx context.Context, req models.GetAllOrdersRequest) (models.GetAllOrdersResponse, error)
 	Delete(ctx context.Context, id string) error
 	DeleteHard(ctx context.Context, id string) error
+}
+
+type IRedisStorage interface {
+	SetX(ctx context.Context, key string, value interface{}, duration time.Duration) error
+	Get(ctx context.Context, key string) interface{}
+	Del(ctx context.Context, key string) error
 }

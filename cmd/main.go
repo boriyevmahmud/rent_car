@@ -9,6 +9,8 @@ import (
 	"context"
 	"fmt"
 
+	"backend_course/rent_car/storage/redis"
+
 	_ "github.com/joho/godotenv"
 )
 
@@ -17,7 +19,8 @@ func main() {
 
 	log := logger.New(cfg.ServiceName)
 
-	store, err := postgres.New(context.Background(), cfg, log)
+	newRedis := redis.New(cfg)
+	store, err := postgres.New(context.Background(), cfg, log, newRedis)
 	if err != nil {
 		fmt.Println("error while connecting db, err: ", err)
 		return

@@ -4,6 +4,7 @@ import (
 	"backend_course/rent_car/config"
 	"backend_course/rent_car/pkg/logger"
 	"backend_course/rent_car/storage"
+	"backend_course/rent_car/storage/redis"
 	"context"
 	"fmt"
 	"time"
@@ -15,9 +16,11 @@ import (
 type Store struct {
 	Pool   *pgxpool.Pool
 	logger logger.ILogger
+	cfg    config.Config
+	redis  storage.IRedisStorage
 }
 
-func New(ctx context.Context, cfg config.Config, logger logger.ILogger) (storage.IStorage, error) {
+func New(ctx context.Context, cfg config.Config, logger logger.ILogger, redis storage.IRedisStorage) (storage.IStorage, error) {
 	url := fmt.Sprintf(`host=%s port=%v user=%s password=%s database=%s sslmode=disable`,
 		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDatabase)
 
@@ -38,6 +41,8 @@ func New(ctx context.Context, cfg config.Config, logger logger.ILogger) (storage
 	return Store{
 		Pool:   newPool,
 		logger: logger,
+		cfg:    cfg,
+		redis:  redis,
 	}, nil
 }
 
@@ -61,4 +66,8 @@ func (s Store) Order() storage.IOrderStorage {
 	newOrder := NewOrderRepo(s.Pool, s.logger)
 
 	return &newOrder
+}
+
+func (s Store) Redis() storage.IRedisStorage {
+	return redis.New(s.cfg)
 }

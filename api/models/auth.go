@@ -18,3 +18,9 @@ type AuthInfo struct {
 type CustomerRegisterRequest struct {
 	Mail string `json:"mail"`
 }
+
+type CustomerRegisterConfRequest struct {
+	Mail     string         `json:"mail"`
+	Otp      string         `json:"otp"`
+	Customer CreateCustomer `json:"customer"`
+}

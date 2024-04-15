@@ -47,6 +47,6 @@ type IOrderStorage interface {
 
 type IRedisStorage interface {
 	SetX(ctx context.Context, key string, value interface{}, duration time.Duration) error
-	Get(ctx context.Context, key string) interface{}
+	Get(ctx context.Context, key string) (interface{}, error)
 	Del(ctx context.Context, key string) error
 }

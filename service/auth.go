@@ -10,6 +10,7 @@ import (
 	"backend_course/rent_car/pkg/smtp"
 	"backend_course/rent_car/storage"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -77,4 +78,38 @@ func (a authService) CustomerRegister(ctx context.Context, loginRequest models.C
 		return err
 	}
 	return nil
+}
+
+func (a authService) CustomerRegisterConfirm(ctx context.Context, req models.CustomerRegisterConfRequest) (models.CustomerLoginResponse, error) {
+	resp := models.CustomerLoginResponse{}
+
+	otp, err := a.redis.Get(ctx, req.Mail)
+	if err != nil {
+		a.log.Error("error while getting otp code for customer register confirm", logger.Error(err))
+		return resp, err
+	}
+	if req.Otp != otp {
+		a.log.Error("incorrect otp code for customer register confirm", logger.Error(err))
+		return resp, errors.New("incorrect otp code")
+	}
+	req.Customer.Email = req.Mail
+	id, err := a.storage.Customer().Create(ctx, req.Customer)
+	if err != nil {
+		a.log.Error("error while creating customer", logger.Error(err))
+		return resp, err
+	}
+	var m = make(map[interface{}]interface{})
+
+	m["user_id"] = id
+	m["user_role"] = config.CUSTOMER_ROLE
+
+	accessToken, refreshToken, err := jwt.GenJWT(m)
+	if err != nil {
+		a.log.Error("error while generating tokens for customer register confirm", logger.Error(err))
+		return resp, err
+	}
+	resp.AccessToken = accessToken
+	resp.RefreshToken = refreshToken
+
+	return resp, nil
 }

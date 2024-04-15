@@ -703,6 +703,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/customer/register-confirm": {
+            "post": {
+                "description": "Customer register",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Customer register",
+                "parameters": [
+                    {
+                        "description": "register",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CustomerRegisterConfRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.CustomerLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/customer/{id}": {
             "get": {
                 "security": [
@@ -1350,6 +1402,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CustomerRegisterConfRequest": {
+            "type": "object",
+            "properties": {
+                "customer": {
+                    "$ref": "#/definitions/models.CreateCustomer"
+                },
+                "mail": {
+                    "type": "string"
+                },
+                "otp": {
                     "type": "string"
                 }
             }

@@ -73,35 +73,35 @@ func (h *Handler) CustomerRegister(c *gin.Context) {
 	handleResponseLog(c, h.Log, "Otp sent successfull", http.StatusOK, "")
 }
 
-// CustomerLogin godoc
-// @Router       /customer/login [POST]
-// @Summary      Customer login
-// @Description  Customer login
+// CustomerRegister godoc
+// @Router       /customer/register-confirm [POST]
+// @Summary      Customer register
+// @Description  Customer register
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        login body models.CustomerLoginRequest true "login"
+// @Param        register body models.CustomerRegisterConfRequest true "register"
 // @Success      201  {object}  models.CustomerLoginResponse
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) CustomerRegisterc(c *gin.Context) {
-	loginReq := models.CustomerLoginRequest{}
+func (h *Handler) CustomerRegisterConfirm(c *gin.Context) {
+	req := models.CustomerRegisterConfRequest{}
 
-	if err := c.ShouldBindJSON(&loginReq); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		handleResponseLog(c, h.Log, "error while binding body", http.StatusBadRequest, err)
 		return
 	}
-	fmt.Println("loginReq: ", loginReq)
+	fmt.Println("req: ", req)
 
 	//TODO: need validate login & password
 
-	loginResp, err := h.Services.Auth().CustomerLogin(c.Request.Context(), loginReq)
+	confResp, err := h.Services.Auth().CustomerRegisterConfirm(c.Request.Context(), req)
 	if err != nil {
-		handleResponseLog(c, h.Log, "unauthorized", http.StatusUnauthorized, err)
+		handleResponseLog(c, h.Log, "error while confirming", http.StatusUnauthorized, err.Error())
 		return
 	}
 
-	handleResponseLog(c, h.Log, "Succes", http.StatusOK, loginResp)
+	handleResponseLog(c, h.Log, "Succes", http.StatusOK, confResp)
 
 }

@@ -30,6 +30,7 @@ func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
 	// r.Use(authMiddleware)
 	r.POST("/customer/login", h.CustomerLogin)
 	r.POST("/customer/register", h.CustomerRegister)
+	r.POST("/customer/register-confirm", h.CustomerRegisterConfirm)
 
 	r.POST("/car", h.CreateCar)
 	r.PUT("/car/:id", h.UpdateCar)

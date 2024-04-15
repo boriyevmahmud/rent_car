@@ -32,8 +32,13 @@ func (s Store) SetX(ctx context.Context, key string, value interface{}, duration
 	return nil
 }
 
-func (s Store) Get(ctx context.Context, key string) interface{} {
-	return s.db.Get(ctx, key).Val()
+func (s Store) Get(ctx context.Context, key string) (interface{}, error) {
+	resp := s.db.Get(ctx, key)
+
+	if resp.Err() != nil {
+		return nil, resp.Err()
+	}
+	return resp.Val(), nil
 }
 
 func (s Store) Del(ctx context.Context, key string) error {

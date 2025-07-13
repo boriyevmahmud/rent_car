@@ -8,7 +8,7 @@ import (
 func SendMail(toEmail string, msg string) error {
 
 	// Compose the email message
-	from := "boriyevmahmud@gmail.com"
+	from := "akromjonotaboyev@gmail.com"
 	to := []string{toEmail}
 	subject := "Register for RENT_CAR"
 	message := msg

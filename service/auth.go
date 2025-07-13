@@ -65,7 +65,7 @@ func (a authService) CustomerRegister(ctx context.Context, loginRequest models.C
 	otpCode := pkg.GenerateOTP()
 
 	msg := fmt.Sprintf("Your otp code is: %v, for registering RENT_CAR. Don't give it to anyone", otpCode)
-
+	fmt.Println(msg)
 	err := a.redis.SetX(ctx, loginRequest.Mail, otpCode, time.Minute*2)
 	if err != nil {
 		a.log.Error("error while setting otpCode to redis customer register", logger.Error(err))

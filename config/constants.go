@@ -14,8 +14,8 @@ const (
 	STATUS_CANCELED     = "canceled"
 	SmtpServer          = "smtp.gmail.com"
 	SmtpPort            = "587"
-	SmtpUsername        = "boriyevmahmud@gmail.com"
-	SmtpPassword        = "vlcv iaxj duak jcww"
+	SmtpUsername        = "akromjonotaboyev@gmail.com"
+	SmtpPassword        = "duriexakadbzalxw"
 )
 
 var SignedKey = []byte("MGJd@Ro]yKoCc)mVY1^c:upz~4rn9Pt!hYd]>c8dt#+%")

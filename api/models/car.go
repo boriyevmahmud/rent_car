@@ -67,11 +67,11 @@ type GetAllCarsResponse struct {
 
 type GetAvailableCarsRequest struct {
 	Search string `json:"search"`
-	Page   uint64    `json:"page"`
-	Limit  uint64    `json:"limit"`
+	Page   uint64 `json:"page"`
+	Limit  uint64 `json:"limit"`
 }
 
 type GetAvailableCarsResponse struct {
-	Cars  []Car `json:"cars"`
-	Count uint64   `json:"count"`
+	Cars  []Car  `json:"cars"`
+	Count uint64 `json:"count"`
 }
